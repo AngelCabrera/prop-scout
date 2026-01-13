@@ -1,5 +1,5 @@
-import { verifyAgentIdentity } from '../services/ai';
-import { ACTIVE_PROFILES } from '../config/profiles';
+import { verifyAgentIdentity } from '../services/ai.js';
+import { ACTIVE_PROFILES } from '../config/profiles.js';
 
 export async function runAgentDiscovery() {
     const potentialAgents = ['@tuinmueble_cumana', '@venezuela_ventas_123', '@century21_sucre'];

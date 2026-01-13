@@ -1,4 +1,5 @@
-import { runAgentDiscovery } from './scrapers/discovery';
+import 'dotenv/config';
+import { runAgentDiscovery } from './scrapers/discovery.js';
 
 async function main() {
     console.log("🚀 Starting Prop Scout Engine...");

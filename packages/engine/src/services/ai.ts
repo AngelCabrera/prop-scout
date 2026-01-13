@@ -1,9 +1,7 @@
-import * as dotenv from 'dotenv';
-dotenv.config({ path: '../../.env' });
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { MarketProfile } from '../config/profiles';
+import { MarketProfile } from '../config/profiles.js';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'REDACTED');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 // 🚀 MODEL 1: The Speed Demon (Parsing HTML)
 const parserModel = genAI.getGenerativeModel({ 

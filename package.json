@@ -1,7 +1,14 @@
 {
-  "name": "cumana-scout-monorepo",
+  "name": "prop-scout",
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@types/node": "^25.0.7",
+    "dotenv": "^17.2.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
 }

@@ -18,10 +18,7 @@ const detectiveModel = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
     tools: [
         { googleSearch: {} } as any
-    ],
-    generationConfig: {
-        responseMimeType: "application/json"
-    }
+    ]
 });
 
 /**
@@ -82,9 +79,12 @@ export async function verifyAgentIdentity(username: string, city: string) {
 
     try {
         const result = await detectiveModel.generateContent(prompt);
-        return JSON.parse(result.response.text());
+        const text = result.response.text();
+        // Clean markdown if present
+        const cleanText = text.replace(/```json\n?|\n?```/g, '').trim();
+        return JSON.parse(cleanText);
     } catch (error) {
         console.error("🕵️ Detective Error (Gemini 2.5):", error);
-        return { is_legit_agent: false, confidence_score: 0 };
+        return { is_legit_agent: false, confidence_score: 0, agency_name: null, found_on_web: false };
     }
 }

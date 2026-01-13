@@ -4,4 +4,4 @@ dist
 .env*
 .wrangler
 .DS_Store
-*.pem
+ScoutKey*

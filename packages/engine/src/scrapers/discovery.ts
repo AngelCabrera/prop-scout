@@ -25,5 +25,8 @@ export async function runAgentDiscovery() {
         if (analysis.is_legit_agent && analysis.confidence_score > 80) {
             console.log("✅ Added to Trusted List");
         }
+
+        // 🛡️ Safety: Wait 5 seconds between each agent to prevent burst limits
+        await new Promise(resolve => setTimeout(resolve, 5000));
     }
 }

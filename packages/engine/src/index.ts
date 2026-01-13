@@ -7,11 +7,11 @@ async function main() {
     while (true) {
         try {
             await runAgentDiscovery();
-            console.log("😴 Discovery cycle complete. Sleeping for 1 hour...");
-            await new Promise(resolve => setTimeout(resolve, 60 * 60 * 1000));
+            console.log("😴 Discovery cycle complete. Sleeping for 24 hours to protect free tier quota...");
+            await new Promise(resolve => setTimeout(resolve, 24 * 60 * 60 * 1000));
         } catch (error) {
             console.error("❌ Error in discovery cycle:", error);
-            await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000)); // Wait 5 mins on error
+            await new Promise(resolve => setTimeout(resolve, 1 * 60 * 60 * 1000)); // Wait 1 hour on error
         }
     }
 }

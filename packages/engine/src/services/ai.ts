@@ -80,8 +80,11 @@ export async function verifyAgentIdentity(username: string, city: string) {
     try {
         const result = await detectiveModel.generateContent(prompt);
         const text = result.response.text();
-        // Clean markdown if present
-        const cleanText = text.replace(/```json\n?|\n?```/g, '').trim();
+        
+        // Extract JSON block using regex if possible
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        const cleanText = jsonMatch ? jsonMatch[0] : text;
+        
         return JSON.parse(cleanText);
     } catch (error) {
         console.error("🕵️ Detective Error (Gemini 2.5):", error);

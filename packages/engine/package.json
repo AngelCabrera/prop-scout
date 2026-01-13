@@ -10,10 +10,12 @@
     "dev": "ts-node src/index.ts"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1"
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "ts-node": "^10.0.0"
+    "ts-node": "^10.0.0",
+    "typescript": "^5.0.0"
   }
 }

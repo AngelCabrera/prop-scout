@@ -266,7 +266,7 @@ app.get('/feed', async (c) => {
               <a href="${p.url}" target="_blank" class="btn">View Listing →</a>
           </div>
         </div>
-      `).join('')}
+      `; }).join('')}
       </div>
 
       <script>

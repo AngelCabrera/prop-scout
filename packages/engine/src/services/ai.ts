@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 // 🚀 MODEL 1: The Speed Demon (Parsing HTML)
 const parserModel = genAI.getGenerativeModel({ 
     model: "gemini-3-flash-preview",
-    systemInstruction: "You are a specialized Data Extraction Bot for Venezuela. You DO NOT hallucinate. If a price is missing, you return -1. You understand 'k', 'mil', 'millones' (Bs vs USD context).",
+    systemInstruction: "You are a specialized Data Extraction Bot for Venezuela. You DO NOT hallucinate. If a price is missing, you return -1. You understand 'k', 'mil', 'millones' (Bs vs USD context). ALWAYS respond with the summary in Spanish.",
     generationConfig: {
         temperature: 0.1,
         responseMimeType: "application/json"
@@ -36,7 +36,11 @@ export async function analyzeListing(text: string, profile: MarketProfile) {
     1. Extract Price (${profile.currency}). Handle "20" -> 20,000 logic if LATAM_CHAOS.
     2. Water Status: Look for 'Tanque', 'Pozo', 'Cisterna'.
     3. Operation Type: Determine if it is a 'Sale' or 'Rental'.
-    4. Score (0-100): Based on location safety and value.
+    4. Availability Check: STRICTLY check if the property is AVAILABLE. 
+       - If the text says "Vendido" (Sold), "Alquilado" (Rented), "Reservado", set Score to 0.
+       - If it is a personal promo, agent profile, or holiday greeting, set Score to 0.
+    5. Score (0-100): Based on location safety and value. Must be 0 if not an available property.
+    6. Language: The 'ai_summary' MUST be in Spanish.
     
     OUTPUT JSON SCHEMA:
     {

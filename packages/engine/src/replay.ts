@@ -25,12 +25,9 @@ async function replay() {
         // 2. Fetch the items from its dataset
         const { items } = await client.dataset(lastRun.defaultDatasetId).listItems();
         
-        // 3. Filter for specific agent macorriere.remaxdestiny.ve
-        const filteredItems = items.filter((item: any) => item.ownerUsername === 'macorriere.remaxdestiny.ve');
-        console.log(`🎯 Found ${filteredItems.length} items for macorriere.remaxdestiny.ve`);
-
-        // 4. Re-run only the AI Analysis & Filtering
-        await processScrapedItems(filteredItems);
+        // 3. Re-run AI Analysis & Filtering on ALL items
+        console.log(`🎯 Processing all ${items.length} items from the dataset...`);
+        await processScrapedItems(items);
         
         console.log("✅ Replay complete!");
     } catch (error) {

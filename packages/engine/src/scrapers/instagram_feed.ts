@@ -68,14 +68,39 @@ export async function processScrapedItems(items: any[]) {
  * ACTOR RUN: Optimized for cost
  * Old cost: ~$0.22/run (80 posts) → New cost: ~$0.02/run (8 posts) = 90% reduction
  */
+// Helper to fetch agents from the API
+async function getTargetAgents(city: string) {
+    try {
+        const url = `${process.env.CF_API_URL}/agents?city=${city}&platform=IG`;
+        console.log(`🌐 Fetching agents from: ${url}`);
+        const { data } = await axios.get(url);
+        return data.map((r: any) => r.username);
+    } catch (e) {
+        console.error("⚠️ Failed to fetch agents from DB, using fallback.");
+        return [];
+    }
+}
+
 export async function runInstagramFeedScraper() {
-    console.log("📸 Starting Instagram Feed Extraction (Apify)...");
+    console.log("📸 Starting Instagram Feed Extraction (Dynamic)...");
     
-    // COST OPTIMIZATION: Using API-based scraper + limiting to latest 2 posts
-    // Old cost: ~$0.22/run (80 posts) → New cost: ~$0.02/run (8 posts) = 90% reduction
+    // 1. FETCH TARGETS FROM DB
+    // Default to 'Cumana' profile city or pass as arg if needed
+    const city = CUMANA_PROFILE.city;
+    const dynamicTargets = await getTargetAgents(city);
+    
+    // If no agents found (cold start), use a hardcoded fallback or just return
+    if (dynamicTargets.length === 0) {
+        console.log("⚠️ No agents found in DB for this city. Skipping run.");
+        return;
+    }
+
+    console.log(`🎯 Targeting ${dynamicTargets.length} agents: ${dynamicTargets.join(', ')}`);
+
+    // 2. RUN APIFY (Optimized)
     const runInput = {
-        "directUrls": VERIFIED_AGENTS.map(u => `https://www.instagram.com/${u}/`),
-        "resultsLimit": 5,  // Increased to 5 posts per profile as requested
+        "directUrls": dynamicTargets.map((u: string) => `https://www.instagram.com/${u}/`),
+        "resultsLimit": 2, // Keep cost optimization ($0.02)
         "resultsType": "posts"
     };
 

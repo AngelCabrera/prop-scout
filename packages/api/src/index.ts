@@ -59,9 +59,53 @@ app.post('/ingest', async (c) => {
     const results = await c.env.DB.batch(batch);
     return c.json({ message: 'Ingestion successful', count: results.length });
 
-  } catch (e: any) {
-    return c.json({ error: e.message }, 500);
+  } catch (err) {
+    console.error(err);
+    return c.json({ error: 'Ingestion failed' }, 500);
   }
+});
+
+/**
+ * GET /agents
+ * Returns list of active agents for scraping
+ */
+app.get('/agents', async (c) => {
+  const city = c.req.query('city');
+  const platform = c.req.query('platform') || 'IG';
+  
+  // Select ACTIVE agents for the specific city
+  const query = `
+    SELECT username FROM discovery_agents 
+    WHERE status = 'ACTIVE' 
+    AND platform = ? 
+    ${city ? "AND city_scope = ?" : ""}
+  `;
+  
+  const params = city ? [platform, city] : [platform];
+  const { results } = await c.env.DB.prepare(query).bind(...params).all();
+  
+  return c.json(results);
+});
+
+/**
+ * POST /agents/recruit
+ * Adds new discovered agents to the database
+ */
+app.post('/agents/recruit', async (c) => {
+  const secret = c.req.header('x-api-secret');
+  if (secret !== c.env.API_SECRET) return c.text('Unauthorized', 401);
+
+  const agents = await c.req.json<any[]>();
+  
+  const stmt = c.env.DB.prepare(`
+    INSERT OR IGNORE INTO discovery_agents (username, platform, status, city_scope, last_checked)
+    VALUES (?, ?, 'ACTIVE', ?, unixepoch())
+  `);
+
+  const batch = agents.map(a => stmt.bind(a.username, a.platform, a.city_scope));
+  const res = await c.env.DB.batch(batch);
+
+  return c.json({ count: res.length });
 });
 
 /**

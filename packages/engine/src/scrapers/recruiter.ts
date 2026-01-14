@@ -76,32 +76,38 @@ export async function runRecruiter() {
 
     for (const [username, info] of candidates) {
         // AI JUDGMENT: Is this snippet describing a realtor in the target city?
+        // CRITICAL UPDATE: Google already matched the City keyword. We just need to confirm they are an AGENT.
         const prompt = `
-        Context: Real Estate in ${CUMANA_PROFILE.city}, ${CUMANA_PROFILE.country}.
+        Search Context: "Real Estate Agents in Cumaná, Venezuela"
+        
         Analyze this Instagram Search Result:
         User: ${username}
         Title: ${info.title}
         Snippet: ${info.snippet}
 
-        Is this user likely a Real Estate Agent or Agency OPERATING in this city?
-        (Strict NO for: Nail salons, personal blogs, news pages, generic aggregators).
+        Task: Is this user a Real Estate Agent, Agency, or Realtor?
         
-        Return JSON: { "is_agent": boolean, "confidence": number }
+        Since this result came from a query for "Cumaná", assume the location match is likely correct unless the text explicitly contradicts it (e.g., "Real Estate in Madrid").
+        
+        Return JSON: { "is_agent": boolean, "confidence": number, "reason": "short explanation" }
         `;
 
         try {
             const result = await classifierModel.generateContent(prompt);
-            const analysis = JSON.parse(result.response.text());
+            const text = result.response.text();
+            // Clean markdown json if present
+            const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+            const analysis = JSON.parse(jsonStr);
 
-            if (analysis.is_agent && analysis.confidence > 70) {
-                console.log(`✅ MATCH: ${username}`);
+            if (analysis.is_agent && analysis.confidence > 60) {
+                console.log(`✅ MATCH: ${username} (${analysis.reason})`);
                 newRecruits.push({
                     username: username,
                     platform: 'IG',
                     city_scope: CUMANA_PROFILE.city
                 });
             } else {
-                console.log(`🗑️ Ignored: ${username}`);
+                console.log(`❌ Rejected: ${username} (${analysis.reason})`);
             }
         } catch (e) {
             console.error("AI Check failed", e);

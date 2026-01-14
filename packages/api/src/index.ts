@@ -121,21 +121,27 @@ app.get('/feed', async (c) => {
   const sort = c.req.query('sort') || 'newest';
   
   const sortMap: Record<string, string> = {
-    'newest': 'last_seen DESC',
-    'oldest': 'last_seen ASC',
+    'newest': 'posted_at DESC', // Changed from last_seen to publication date
+    'oldest': 'posted_at ASC',
     'price_asc': 'price_usd ASC',
     'price_desc': 'price_usd DESC',
     'score': 'ai_score DESC'
   };
 
-  const orderBy = sortMap[sort] || 'last_seen DESC';
+  const orderBy = sortMap[sort] || 'posted_at DESC';
+
+  // Filter posts older than 30 days (ISO comparison for TEXT column)
+  const d = new Date();
+  d.setDate(d.getDate() - 30);
+  const THIRTY_DAYS_AGO = d.toISOString();
 
   const { results } = await c.env.DB.prepare(`
     SELECT * FROM properties 
     WHERE status = 'AVAILABLE' 
+    AND (posted_at IS NULL OR posted_at > ?)
     ORDER BY ${orderBy}
     LIMIT 100
-  `).all();
+  `).bind(THIRTY_DAYS_AGO).all();
 
   // Simple HTML Template
   const html = `

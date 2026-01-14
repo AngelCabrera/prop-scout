@@ -28,6 +28,14 @@ export async function processScrapedItems(items: any[]) {
         const caption = post.caption || "";
         if (caption.length < 50) continue;
 
+        // Discard posts older than 30 days
+        const postDate = new Date(post.timestamp);
+        const diffDays = (Date.now() - postDate.getTime()) / (1000 * 60 * 60 * 24);
+        if (diffDays > 30) {
+            console.log(`⏳ Skipped old post from ${post.ownerUsername} (${Math.floor(diffDays)} days ago)`);
+            continue;
+        }
+
         console.log(`🤖 Analyzing post from ${post.ownerUsername}...`);
         const analysis = await analyzeListing(caption, CUMANA_PROFILE);
         console.log(`🎯 AI Analysis: Price=${analysis?.price_usd}, Type=${analysis?.operation_type}, Score=${analysis?.ai_score}`);

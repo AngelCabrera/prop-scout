@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@scout/shared": "*",
+    "apify-client": "^2.11.0",
     "dotenv": "^17.2.3",
     "tsx": "^4.21.0"
   },

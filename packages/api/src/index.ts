@@ -30,9 +30,9 @@ app.post('/ingest', async (c) => {
     const stmt = c.env.DB.prepare(`
       INSERT INTO properties (
         external_id, url, source, image_url, price_usd, location_zone, 
-        ai_score, ai_summary, water_status, specs, status, last_seen
+        ai_score, ai_summary, water_status, operation_type, specs, status, last_seen
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'AVAILABLE', unixepoch()
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'AVAILABLE', unixepoch()
       )
       ON CONFLICT(external_id) DO UPDATE SET
         price_usd = excluded.price_usd,
@@ -52,6 +52,7 @@ app.post('/ingest', async (c) => {
       p.ai_score,
       p.ai_summary,
       p.water_status,
+      p.operation_type || 'Unknown',
       JSON.stringify(p.specs || {})
     ));
 
@@ -89,6 +90,8 @@ app.get('/feed', async (c) => {
         .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
         .tag.score { background: #dcfce7; color: #166534; }
         .tag.water { background: #dbeafe; color: #1e40af; }
+        .tag.type { background: #fee2e2; color: #991b1b; }
+        .tag.type.rental { background: #fef9c3; color: #854d0e; }
         .price { font-size: 1.25rem; font-weight: bold; color: #111; }
         .zone { color: #666; font-size: 0.9rem; }
         a { display: block; margin-top: 10px; color: #2563eb; text-decoration: none; }
@@ -108,8 +111,9 @@ app.get('/feed', async (c) => {
           </div>
           <div class="zone">📍 ${p.location_zone} | ${p.source}</div>
           <p style="margin: 8px 0; font-size: 0.95rem;">${p.ai_summary}</p>
-          <div>
+          <div style="display:flex; gap: 8px;">
             <span class="tag water">💧 ${p.water_status}</span>
+            <span class="tag type ${p.operation_type?.toLowerCase() === 'rental' ? 'rental' : ''}">${p.operation_type === 'Sale' ? '💰 Sale' : '🔑 Rental'}</span>
           </div>
           <a href="${p.url}" target="_blank">View Listing →</a>
         </div>

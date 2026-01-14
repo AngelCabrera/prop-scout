@@ -8,5 +8,6 @@ export interface PropertyPayload {
   ai_score: number;
   ai_summary: string;
   water_status: 'Tank' | 'Well' | 'Constant' | 'None' | 'Unknown';
+  operation_type: 'Sale' | 'Rental' | 'Unknown';
   specs?: Record<string, any>;
 }

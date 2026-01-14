@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { runAgentDiscovery } from './scrapers/discovery.js';
+import { runInstagramFeedScraper } from './scrapers/instagram_feed.js';
 
 async function main() {
     console.log("🚀 Starting Prop Scout Engine...");
@@ -7,6 +8,7 @@ async function main() {
     while (true) {
         try {
             await runAgentDiscovery();
+            await runInstagramFeedScraper();
             console.log("😴 Discovery cycle complete. Sleeping for 24 hours to protect free tier quota...");
             await new Promise(resolve => setTimeout(resolve, 24 * 60 * 60 * 1000));
         } catch (error) {

@@ -35,13 +35,15 @@ export async function analyzeListing(text: string, profile: MarketProfile) {
     INSTRUCTIONS:
     1. Extract Price (${profile.currency}). Handle "20" -> 20,000 logic if LATAM_CHAOS.
     2. Water Status: Look for 'Tanque', 'Pozo', 'Cisterna'.
-    3. Score (0-100): Based on location safety and value.
+    3. Operation Type: Determine if it is a 'Sale' or 'Rental'.
+    4. Score (0-100): Based on location safety and value.
     
     OUTPUT JSON SCHEMA:
     {
         "price_usd": number,
         "location_zone": string,
         "water_status": "Tank" | "Well" | "None" | "Unknown",
+        "operation_type": "Sale" | "Rental" | "Unknown",
         "ai_score": number,
         "ai_summary": string,
         "specs": { "bedrooms": number, "bathrooms": number, "m2": number }

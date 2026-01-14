@@ -5,11 +5,11 @@ export interface MarketProfile {
     price_strategy: 'LATAM_CHAOS' | 'STANDARD';
 }
 
-export const ACTIVE_PROFILES: MarketProfile[] = [
-    {
-        city: 'Cumaná',
-        country: 'Venezuela',
-        currency: 'USD',
-        price_strategy: 'LATAM_CHAOS'
-    }
-];
+export const CUMANA_PROFILE: MarketProfile = {
+    city: 'Cumaná',
+    country: 'Venezuela',
+    currency: 'USD',
+    price_strategy: 'LATAM_CHAOS'
+};
+
+export const ACTIVE_PROFILES: MarketProfile[] = [CUMANA_PROFILE];

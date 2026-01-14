@@ -30,15 +30,16 @@ app.post('/ingest', async (c) => {
     const stmt = c.env.DB.prepare(`
       INSERT INTO properties (
         external_id, url, source, image_url, price_usd, location_zone, 
-        ai_score, ai_summary, water_status, operation_type, specs, status, last_seen
+        ai_score, ai_summary, water_status, operation_type, specs, status, last_seen, posted_at
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'AVAILABLE', unixepoch()
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'AVAILABLE', unixepoch(), ?
       )
       ON CONFLICT(external_id) DO UPDATE SET
         price_usd = excluded.price_usd,
         status = 'AVAILABLE',
         last_seen = unixepoch(),
-        ai_score = excluded.ai_score;
+        ai_score = excluded.ai_score,
+        posted_at = COALESCE(excluded.posted_at, posted_at);
     `);
 
     // Execute in batch for performance
@@ -53,7 +54,8 @@ app.post('/ingest', async (c) => {
       p.ai_summary,
       p.water_status,
       p.operation_type || 'Unknown',
-      JSON.stringify(p.specs || {})
+      JSON.stringify(p.specs || {}),
+      p.posted_at || null
     ));
 
     const results = await c.env.DB.batch(batch);
@@ -177,6 +179,27 @@ app.get('/feed', async (c) => {
         .price { font-size: 1.5rem; font-weight: 800; color: #111; letter-spacing: -0.5px; }
         .zone { color: #666; font-size: 0.85rem; margin-top: 4px; line-height: 1.4; }
         
+        .price-tag {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #4ade80;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .posted-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+        
         a.btn { 
             display: block; 
             text-align: center;
@@ -212,10 +235,19 @@ app.get('/feed', async (c) => {
       ${results.length === 0 ? '<p style="text-align:center">No properties yet.</p>' : ''}
       
       <div class="grid">
-      ${results.map((p: any) => `
-        <div class="card">
-          ${p.image_url ? `<img src="https://images.weserv.nl/?url=${encodeURIComponent(p.image_url)}&w=400" loading="lazy" referrerpolicy="no-referrer" />` : ''}
-          <div class="card-content">
+      ${results.map((p: any) => {
+                const date = new Date(p.last_seen * 1000).toLocaleString('es-VE', { timeZone: 'America/Caracas' });
+                const postedDate = p.posted_at ? new Date(p.posted_at) : null;
+                const timeAgo = postedDate ? Math.floor((Date.now() - postedDate.getTime()) / (1000 * 60 * 60 * 24)) : null;
+                const postedLabel = timeAgo !== null ? (timeAgo === 0 ? 'Hoy' : `Hace ${timeAgo} días`) : '';
+
+                return `
+                <div class="card">
+                    <div class="card-image" style="background-image: url('https://images.weserv.nl/?url=${encodeURIComponent(p.image_url || '')}&w=400')">
+                        <div class="price-tag">$${p.price_usd.toLocaleString()}</div>
+                        ${postedLabel ? `<div class="posted-tag">${postedLabel}</div>` : ''}
+                    </div>
+                    <div class="card-content">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
                  <span class="price">${p.price_usd > 0 ? '$' + p.price_usd.toLocaleString() : 'Consultar'}</span>
                  <span class="tag score">Score: ${p.ai_score}</span>

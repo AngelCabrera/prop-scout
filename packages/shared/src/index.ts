@@ -10,4 +10,5 @@ export interface PropertyPayload {
   water_status: 'Tank' | 'Well' | 'Constant' | 'None' | 'Unknown';
   operation_type: 'Sale' | 'Rental' | 'Unknown';
   specs?: Record<string, any>;
+  posted_at?: string; // ISO String from source
 }

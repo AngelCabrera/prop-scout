@@ -51,7 +51,8 @@ export async function processScrapedItems(items: any[]) {
                 
                 country: CUMANA_PROFILE.country,
                 state: 'Sucre',
-                city: CUMANA_PROFILE.city
+                city: CUMANA_PROFILE.city,
+                posted_at: post.timestamp // New Field: Publication Date
             } as any);
         } else {
              if (analysis) console.log(`❌ Rejected: ${analysis.ai_summary.slice(0, 50)}... (Score: ${analysis.ai_score})`);

@@ -71,13 +71,18 @@ app.post('/ingest', async (c) => {
 app.get('/feed', async (c) => {
   // Get top 50 active listings, sorted by AI Score
   // Get sort parameter, default to 'newest'
+  // Whitelist sort options to prevent SQL injection and ensure default behavior
   const sort = c.req.query('sort') || 'newest';
   
-  let orderBy = 'last_seen DESC';
-  if (sort === 'oldest') orderBy = 'last_seen ASC';
-  if (sort === 'price_asc') orderBy = 'price_usd ASC';
-  if (sort === 'price_desc') orderBy = 'price_usd DESC';
-  if (sort === 'score') orderBy = 'ai_score DESC';
+  const sortMap: Record<string, string> = {
+    'newest': 'last_seen DESC',
+    'oldest': 'last_seen ASC',
+    'price_asc': 'price_usd ASC',
+    'price_desc': 'price_usd DESC',
+    'score': 'ai_score DESC'
+  };
+
+  const orderBy = sortMap[sort] || 'last_seen DESC';
 
   const { results } = await c.env.DB.prepare(`
     SELECT * FROM properties 

@@ -15,10 +15,13 @@ const parserModel = genAI.getGenerativeModel({
 
 // 🕵️ MODEL 2: The Detective (Agent Verification)
 const detectiveModel = genAI.getGenerativeModel({ 
-    model: "gemini-2.5-flash",
+    model: "gemini-1.5-flash", // Switched to stable 1.5-flash to ensure tool compatibility
     tools: [
         { googleSearch: {} } as any
-    ]
+    ],
+    generationConfig: {
+        responseMimeType: "text/plain" // Explicitly disable JSON mode for tool use
+    }
 });
 
 /**

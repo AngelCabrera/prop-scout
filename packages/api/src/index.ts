@@ -253,7 +253,6 @@ app.get('/feed', async (c) => {
                 return `
                 <div class="card">
                     <div class="card-image" style="background-image: url('https://images.weserv.nl/?url=${encodeURIComponent(p.image_url || '')}&w=400')">
-                        <div class="price-tag">$${p.price_usd.toLocaleString()}</div>
                         ${postedLabel ? `<div class="posted-tag">${postedLabel}</div>` : ''}
                     </div>
                     <div class="card-content">

@@ -179,6 +179,15 @@ app.get('/feed', async (c) => {
         .price { font-size: 1.5rem; font-weight: 800; color: #111; letter-spacing: -0.5px; }
         .zone { color: #666; font-size: 0.85rem; margin-top: 4px; line-height: 1.4; }
         
+        .card-image { 
+            width: 100%; 
+            height: 200px; 
+            background-size: cover; 
+            background-position: center; 
+            position: relative; 
+            background-color: #eee;
+        }
+
         .price-tag {
             position: absolute;
             bottom: 10px;

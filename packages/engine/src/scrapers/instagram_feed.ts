@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { ApifyClient } from 'apify-client';
 import { ingestProperties } from '../services/cloudflare.js';
 import { analyzeListing } from '../services/ai.js';

@@ -5,7 +5,7 @@ import { CUMANA_PROFILE } from '../config/profiles.js';
 // Use Gemini 3 Flash for fast classification of the Snippet
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const classifierModel = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash-latest", 
+    model: "gemini-2.5-flash", // Latest stable model (1M tokens input, 65K output)
     generationConfig: { responseMimeType: "application/json" }
 });
 

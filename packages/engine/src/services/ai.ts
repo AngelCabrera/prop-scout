@@ -15,7 +15,7 @@ const parserModel = genAI.getGenerativeModel({
 
 // 🕵️ MODEL 2: The Detective (Agent Verification)
 const detectiveModel = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash", // Switched to stable 1.5-flash to ensure tool compatibility
+    model: "gemini-2.5-flash", // Reverted to 2.5-flash as requested
     tools: [
         { googleSearch: {} } as any
     ],

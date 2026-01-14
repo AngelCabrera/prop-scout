@@ -89,7 +89,7 @@ export async function runRecruiter() {
         
         Since this result came from a query for "Cumaná", assume the location match is likely correct unless the text explicitly contradicts it (e.g., "Real Estate in Madrid").
         
-        Return JSON: { "is_agent": boolean, "confidence": number, "reason": "short explanation" }
+        Return JSON: { "is_agent": boolean, "confidence": number (0-100), "reason": "short explanation" }
         `;
 
         try {
@@ -99,8 +99,12 @@ export async function runRecruiter() {
             const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
             const analysis = JSON.parse(jsonStr);
 
-            if (analysis.is_agent && analysis.confidence > 60) {
-                console.log(`✅ MATCH: ${username} (${analysis.reason})`);
+            // Normalize confidence to 0-100 if it came back as 0-1
+            let score = analysis.confidence;
+            if (score <= 1) score = score * 100;
+
+            if (analysis.is_agent && score > 60) {
+                console.log(`✅ MATCH: ${username} (${analysis.reason}) - Score: ${score}`);
                 newRecruits.push({
                     username: username,
                     platform: 'IG',

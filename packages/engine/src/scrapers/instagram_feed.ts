@@ -102,7 +102,7 @@ export async function runInstagramFeedScraper() {
     // 2. RUN APIFY (Optimized)
     const runInput = {
         "directUrls": dynamicTargets.map((u: string) => `https://www.instagram.com/${u}/`),
-        "resultsLimit": 2, // Keep cost optimization ($0.02)
+        "resultsLimit": 3, // Increased to 3 as requested
         "resultsType": "posts"
     };
 

@@ -36,10 +36,10 @@ jobs:
 
             # 1. Scraper (Daily at 6am)
             pm2 delete scout-scraper || true
-            pm2 start packages/engine/src/index.ts --interpreter ./node_modules/.bin/tsx --name 'scout-scraper' --cron "0 6 * * *" -- scrape
+            pm2 start packages/engine/src/index.ts --interpreter ./node_modules/.bin/tsx --name 'scout-scraper' --cron "0 6 * * *" --no-autorestart -- scrape
 
             # 2. Recruiter (Weekly on Sundays at 8am)
             pm2 delete scout-recruiter || true
-            pm2 start packages/engine/src/index.ts --interpreter ./node_modules/.bin/tsx --name 'scout-recruiter' --cron "0 8 * * 0" -- recruit
+            pm2 start packages/engine/src/index.ts --interpreter ./node_modules/.bin/tsx --name 'scout-recruiter' --cron "0 8 * * 0" --no-autorestart -- recruit
             
             pm2 save
